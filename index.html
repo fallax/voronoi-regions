@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <head>
-<script src="//maps.google.com/maps/api/js?sensor=true"></script>
+<script src="//maps.google.com/maps/api/js?key=AIzaSyBhk3MnvkOvLi_j3Q3rQ8qfU--eXuiQFaM"></script>
 <style>
 html, body, #map {
   width: 100%;
@@ -12,7 +12,16 @@ html, body, #map {
 </style>
 </head>
 <body>
+	<div id="output"></div>
 	<div id="map"></div>
+	<svg id="map2">
+		  <defs>
+		    <radialGradient id="exampleGradient">
+		      <stop offset="10%" stop-color="rgba(255,255,255,0.8)"/>
+		      <stop offset="95%" stop-color="rgba(255,255,255,0)"/>
+		    </radialGradient>
+		  </defs>
+	</svg>
 </body>
 <script src="//d3js.org/d3.v4.min.js" charset="utf-8"></script>
 <script src="//d3js.org/topojson.v1.min.js"></script>
@@ -25,6 +34,12 @@ var map = new google.maps.Map(d3.select("#map").node(), {
   mapTypeId: google.maps.MapTypeId.TERRAIN
 });
 
+fetch('map-styles.json')
+    .then((response) => response.json())
+    .then(function (styles) {
+      map.mapTypes.set('neutral-blue', new google.maps.StyledMapType(styles));
+      map.setMapTypeId('neutral-blue');
+    });
 
 var regions =
 {
@@ -45,16 +60,16 @@ var regions =
 	'Brighton-Hove': 'South East',
 	'Bournemouth-Poole': 'Solent',
 	'Cardiff-Newport': 'South Wales',
-	'Middlesbrough': 'North East',
+	'Middlesbrough': 'North Yorkshire',
 	'Stoke': 'West',
 	'Coventry': 'West Mids',
-	'Reading': 'GWR',
+	'Reading': 'London',
 	'Hull': 'North Yorkshire',
 	'Preston-Blackpool': 'North West',
 	'Swansea': 'Wales',
 	'Southend-on-Sea': 'London',
 	'Plymouth': 'South West',
-	'Luton': 'London',
+	'Luton': 'M1',
 	'Farnborough': 'London',
 	'Medway Towns': 'London',
 	'Swindon': 'GWR',
@@ -84,7 +99,9 @@ var regions =
 	'Huddersfield': 'North Yorkshire',
 	'Stockport': 'North West',
 	'Barnstaple': 'South West',
-	'Portsmouth': 'Solent'
+	'Portsmouth': 'Solent',
+	'Sunderland': 'North East',
+	'St Albans': 'London'
 };
 
 var colours = 
@@ -179,33 +196,12 @@ var cities = [
 { name: 'Taunton', coordinates: [-3.1, 51.019]},
 { name: 'Barnstaple', coordinates: [-4.06, 51.08]},
 { name: 'Portsmouth', coordinates: [-1.083333, 50.816667]},
-{ name: 'Dublin', coordinates: [-6.260278, 53.349722]}
+{ name: 'Dublin', coordinates: [-6.260278, 53.349722]},
+{ name: 'Sunderland', coordinates: [-1.38113, 54.9061]},
+{ name: 'St Albans', coordinates: [-0.336, 51.755]}
 ];
 
-var width = 2000,
-    height = 4000;
-
-/*var projection = d3.geoAlbers()
-    .center([0, 55.4])
-    .rotate([4.4, 0])
-    .parallels([50, 60])
-    .scale(1200 * 7)
-    .translate([width / 2, height / 2]);*/
-
-
-
-/*
-var path = d3.geoPath()
-    .projection(projection);
-
-
-
-var svg = d3.select("#map")
-    .attr("width", width)
-    .attr("height", height);
-*/
-
-var voronoi = d3.voronoi().extent([[-8, 48], [2, 60]]);
+var voronoi = d3.voronoi().extent([[-8, 48], [4, 60]]);
 var projection = null;
 
 function redrawPolygon(d) {
@@ -267,7 +263,7 @@ var overlay = new google.maps.OverlayView();
   .each(redrawPolygon)
   .enter().append("path")
   	.attr("style", colourArea)
-  	.style("stroke", "rgba(255,255,255,0.25)")
+  	.style("stroke", "rgba(255,255,255,0.1)")
     .each(redrawPolygon);
   	}
   };
