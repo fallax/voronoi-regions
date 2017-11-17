@@ -19,7 +19,7 @@
     },
     {
         "featureType": "poi.park",
-        "elementType": "all",
+        "elementType": "geometry",
         "stylers": [
             {
                 "visibility": "on"
